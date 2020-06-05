@@ -25,15 +25,16 @@ class PicukiSpider(scrapy.Spider):
         caption = response.meta['caption']
 
         url = response.meta['url']
+        likes = response.xpath('.//span[@class="icon-thumbs-up-alt"]/text()').get()
 
-        comments = response.xpath('//div[@id="commantsPlace"]/text()')
-        for i in range(0, 24):
+        # need to put a regex here to get just the number value:
+        num_of_comments = response.xpath('.//span[@id="commentsCount"]/text()').get()
+        comments = response.xpath('//div[@id="commantsPlace"]/*[@class="comment"]')
+        for comment in comments:
             likes = response.xpath('.//span[@class="icon-thumbs-up-alt"]/text()').get()
-            # need to put a regex here to get just the number value:
-            num_of_comments = response.xpath('.//span[@id="commentsCount"]/text()').get()
 
-            comment_user_name = response.xpath('.//*[@class="comment-user-nickname"]/a/text()').get()
-            comment_text = response.xpath('.//*[@class="comment-text"]/text()').get()
+            comment_user_name = comment.xpath('.//*[@class="comment-user-nickname"]/a/text()').get()
+            comment_text = comment.xpath('.//*[@class="comment-text"]/text()').get()
 
             yield {'img_url': img_url,
                    'caption': caption,
